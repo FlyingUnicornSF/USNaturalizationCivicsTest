@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+  <html>
+    <head>  
+      <link href="https://fonts.googleapis.com/css?family=Julius+Sans+One|Roboto&display=swap" rel="stylesheet">
+      <link rel="stylesheet" href="style.css">
+    </head>
+    <body>
+      <header class="shadow"><h2>US Naturalization Civics Test</h2></header>
+      <h3 class="number"><span id="remaining"></span> questions to go!</h3>
+      <p class="margin-1em text-center" id="notification">this is where notification will deplay</p>
+      <div id="talkbubble" class="text-center shadow"><span class="margin-1em text-center qustion-display" id="queston"></span></div>
+      <!-- <form action="questions.js" method="post"> -->
+      <form class="margin-1em">
+        <div id="answer-input-container" class="margin-1em text-center"></div>
+        <hr>
+        <div class="margin-1em text-center">
+          <button type="submit" class="pretty-button" id="submit">Sumbit</button>
+          <button type="button" class="pretty-button" id="next-q">Next Q</button>
+          <button type="button" class="pretty-button" id="give-up">i give up. show me the answers.</button>
+        </div>
+      </form>
+      <div id="display-answers" class="margin-1em"></div>
+      <script type="module" src="popup.js"></script>
+    </body>
+</html>

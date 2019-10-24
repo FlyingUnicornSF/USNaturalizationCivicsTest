@@ -1,0 +1,80 @@
+body{
+    width: 30em;
+    font-family: 'Roboto', sans-serif;
+    margin: 0px;
+}
+header{
+    font-family: 'Julius Sans One', sans-serif;
+    height: fit-content;
+    width: 100%;
+    position: relative;
+    top: 0;
+    left: 0;
+    background-color: rgb(33, 131, 142);
+    color: white;
+    text-align: center;
+    padding: 0.5em;
+}
+.number{
+    font-family: 'Julius Sans One', sans-serif;
+    text-align: center;
+}
+.qustion-display {
+    font-size: 1.25em;
+    color: white;
+    word-spacing: 2px;
+    display: inline-block;
+    vertical-align: middle;
+    line-height: normal;
+}
+.margin-1em {
+    margin: 1em;
+}
+.text-center {
+    text-align: center;
+}
+.answer-input {
+    margin: 1em;
+    width: 75%;
+    height: 2em;
+    border-radius: 2px;
+    border: 1px solid #b5b7b9;
+    padding: 5px 11px;
+}
+#talkbubble {
+    width: 25em;
+    height: fit-content;
+    position: relative;
+    -moz-border-radius: 10px;
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+    background: #461a09c4;
+    left: 15px;
+    margin: 2em;
+}
+#talkbubble:before {
+    content: "";
+    position: absolute;
+    right: 100%;
+    top: 8px;
+    width: 0;
+    height: 0;
+    border-top: 10px solid transparent;
+    border-right: 30px solid #461a09c4;
+    border-bottom: 13px solid transparent;
+}
+
+.shadow {
+    box-shadow: 0px 5px 9px 0px rgba(0, 0, 0, 0.2);
+}
+.pretty-button {
+    border: 0px;
+    background: rgba(33, 131, 142, 0.42);
+    border-radius: 3px;
+    height: 2em;
+    margin: 0.2em;
+}
+.pretty-button:hover {
+    background: rgba(33, 131, 142, 0.75);
+    box-shadow: 0px 5px 9px 0px rgba(0, 0, 0, 0.2);
+}

@@ -1,4 +1,4 @@
-import { pickRandomQ, deleteQ } from './questions.js';
+import { pickRandomQ, deleteQ, resetQuestions } from './questions.js';
 import { allTheQs } from './100q.js';
 
 const submit = document.getElementById('submit');
@@ -37,6 +37,13 @@ async function load() {
 
 window.onload = load;
 
+/**
+ * generate a string which consists all of the index of questions
+ * and store in window.localStorage
+ * this function is a part of window.load
+ * when setup is complete, loads the first question
+ * @param {number} numOfQuestions 
+ */
 function setUpIndex(numOfQuestions) {
 	let listOfAnsIndexStr = '';
 	let listOfAnsIndexArr = [];
@@ -61,12 +68,19 @@ submit.onclick = function(event) {
 	event.preventDefault();
 	checkAnswer();
 };
-
+/**
+ *  - clear the answer field
+ * - clear the answer input field
+ * - retrieve answer index string from window local storage
+ * - and convert to an array
+ * - call loadNextQustions
+ */
 nextQ.onclick = function(event) {
 	showAnswers.innerHTML = '';
 	answerInContainer.innerHTML = '';
 	let listOfAnsIndexStr = window.localStorage.getItem('unanswered');
-	let listOfAnsIndexArr = listOfAnsIndexStr.split(',');
+	let arr = listOfAnsIndexStr.split(',');
+	let listOfAnsIndexArr = arr.filter(ele => ele !== '');
 	loadNextQestion(listOfAnsIndexArr);
 };
 
@@ -80,6 +94,24 @@ giveUp.onclick = function() {
 	};
 };
 
+function allDone(){
+	answerInContainer.innerHTML = '';
+	displayAnswers.innerHTML = '';
+	let reloadButton = document.createElement('button');
+	reloadButton.classList = "pretty-button";
+	let closeButton = reloadButton.cloneNode();
+	reloadButton.innerText = "Reset questions";
+	reloadButton.onclick = resetQuestions;
+	closeButton.innerText = "Close";
+	closeButton.onclick = ()=>{window.close()};
+	answerInContainer.appendChild(reloadButton);
+	answerInContainer.appendChild(closeButton);
+};
+
+/**
+ * populates answer field
+ * @param {Array<string>} answerArray 
+ */
 function showAnswers(answerArray) {
   displayAnswers.innerHTML = '';
 	let answerWrapper = document.createElement('ul');
@@ -111,37 +143,44 @@ function checkAnswer() {
 	displayAnswers.innerHTML = '';
 	deleteQ(questionIndex);
 	showAnswers(answerArray);
+	let foo = window.localStorage.getItem('unanswered');
+	if(!foo){
+		allDone();
+	}
 	answerArray = undefined;
 	answerSet = new Set();
 	questionIndex = undefined;
 };
 
 async function loadNextQestion(listOfAnsIndexArr) {
+	// clear answers 
 	displayAnswers.innerHTML = '';
-	// console.log(listOfAnsIndexArr)
+	// change notifcation to questio
 	notification.innerText = '< Question >';
-  let result = await pickRandomQ(listOfAnsIndexArr);
-  console.log(result)
-	// remaining.innerText = listOfAnsIndexArr.length;
-	// let questionDisplay = document.getElementById('queston');
-	// let answerQuestionSet = result.question;
-	// // console.log(answerQuestionSet)
-	// questionIndex = answerQuestionSet[0]; // reminder of questions in number
-	// questionDisplay.innerText = answerQuestionSet[1]; // Question
-	// answerArray = answerQuestionSet[2]; // first index is the number of answers it requires
-	// let text = document.createElement('p');
-	// text.innerText = '< Answer >';
-	// answerInContainer.appendChild(text);
-	// for (let i = 0; i < answerArray[0]; i += 1) {
-	// 	let newDiv = document.createElement('input');
-	// 	newDiv.type = 'text';
-	// 	newDiv.className = 'answer-input';
-	// 	answerInContainer.appendChild(newDiv);
-	// };
-	// answerArray.splice(0, 1);
-	// answerSet = new Set();
-	// for (let i = 0; i < answerArray.length; i += 1) {
-	// 	// console.log(answerArray[i].toLowerCase());
-	// 	answerSet.add(answerArray[i].toLowerCase());
-	// };
+	// pick a ramdom question 
+	let result = await pickRandomQ(listOfAnsIndexArr);
+	// save which question was asked in index
+  	questionIndex = result.question.index;
+	// update reminder # of questions
+	remaining.innerText = listOfAnsIndexArr.length;
+	// display question
+	let questionDisplay = document.getElementById('queston');
+	questionDisplay.innerText = result.question.question;
+	// save answers 
+	answerArray = result.question.answers; 
+	// populate input fields
+	let text = document.createElement('p');
+	text.innerText = '< Answer >';
+	answerInContainer.appendChild(text);
+	for (let i = 0; i < result.question.answerInputCount; i += 1) {
+		let newDiv = document.createElement('input');
+		newDiv.type = 'text';
+		newDiv.className = 'answer-input';
+		answerInContainer.appendChild(newDiv);
+	};
+	// save answer in a set for checking answers
+	answerSet = new Set();
+	for (let i = 0; i < answerArray.length; i += 1) {
+		answerSet.add(answerArray[i].toLowerCase());
+	};
 };

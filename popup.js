@@ -104,8 +104,13 @@ function allDone(){
 	reloadButton.onclick = resetQuestions;
 	closeButton.innerText = "Close";
 	closeButton.onclick = ()=>{window.close()};
+	let congrats = document.createElement('h3');
+	congrats.innerText = "Congratulations! You're all done!"
+	answerInContainer.appendChild(congrats);
 	answerInContainer.appendChild(reloadButton);
 	answerInContainer.appendChild(closeButton);
+	let buttons = document.getElementById('button-group');
+	buttons.setAttribute('hidden', '');
 };
 
 /**

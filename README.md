@@ -13,7 +13,7 @@ If you can't answer and want to see the correct answers, push give up button and
 if you ever decided to use this, good luck with the test! Let me know if find any bugs. 
 
 
-![screenshot](https://raw.githubusercontent.com/FlyingUnicornSF/USNaturalizationCivicsTest/master/ScreenShot.png)
+![screenshot](https://raw.githubusercontent.com/FlyingUnicornSF/USNaturalizationCivicsTest/master/ScreenShot.png)![optionpage|10%](https://raw.githubusercontent.com/FlyingUnicornSF/USNaturalizationCivicsTest/master/optionPage.png)
 ## How to install
 - download files into a folder
 - Open the Extension Management page by navigating to chrome://extensions.

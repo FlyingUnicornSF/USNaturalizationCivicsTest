@@ -61,7 +61,7 @@ export const allTheQs = [
 { question: "What group of people was taken to America and sold as slaves", answerInputCount: 1, answers: ["Africans", "people from Africa"]},
 { question: "Why did the colonists fight the British", answerInputCount: 1, answers: ["because of high taxes", "taxation without representation", "because the British army stayed in their houses boarding, quartering", "because they didn’t have self-government"]},
 { question: "Who wrote the Declaration of Independence", answerInputCount: 1, answers: ["Thomas Jefferson"]},
-{ question: "When was the Declaration of Independence adopted", answerInputCount: 1, answers: ["July 4, 1776"]},
+{ question: "When was the Declaration of Independence adopted (day and year)", answerInputCount: 1, answers: ["July 4, 1776"]},
 { question: "There were 13 original states. Name three", answerInputCount: 3, answers: ["New Hampshire", "Massachusetts", "Rhode Island", "Connecticut", "New York", "New Jersey", "Pennsylvania", "Delaware", "Maryland", "Virginia", "North Carolina", "South Carolina", "Georgia"]},
 { question: "What happened at the Constitutional Convention", answerInputCount: 1, answers: ["The Constitution was written", "The Founding Fathers wrote the Constitution"]},
 { question: "When was the Constitution written - which year", answerInputCount: 1, answers: ["1787"]},

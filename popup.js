@@ -1,4 +1,5 @@
-import { pickRandomQ, deleteQ, resetQuestions } from './questions.js';
+import {AllQuestionsStorage, UnansweredQuestionIndexesStorage} from './persistence.js';
+import { pickRandomQ, resetQuestions } from './questions.js';
 import { allTheQs } from './100q.js';
 
 const submit = document.getElementById('submit');
@@ -17,48 +18,30 @@ let questionIndex;
 async function load() {
 	// check if there is any questions are
 	// if not, load all of the questions to the storage
-	chrome.storage.local.get(['questions'], function(result) {
-		notification.innerText = 'this works';
-		if (!result.question || result.question.length === 0) {
-			chrome.storage.local.set({ questions: allTheQs }, function() {
-				var error = chrome.runtime.lastError;
-				if (error) {
-					console.log(error);
-					message.innterText = error;
-				}
-				setUpIndex(allTheQs.length);
-				// console.log('questions are set');
-			});
-		} else {
-			setUpIndex(result.question.length);
-		};
-	});
-};
+	let questions = await AllQuestionsStorage.get();
+	if (questions.length === 0) {
+		await AllQuestionsStorage.set(allTheQs);
+		setUpIndex(allTheQs.length);
+	}
+}
 
 window.onload = load;
 
 /**
  * generate a string which consists all of the index of questions
- * and store in window.localStorage
+ * and store in UnansweredQuestionIndexesStorage
  * this function is a part of window.load
  * when setup is complete, loads the first question
- * @param {number} numOfQuestions 
+ * @param {number} numOfQuestions
  */
 function setUpIndex(numOfQuestions) {
-	let listOfAnsIndexStr = '';
-	let listOfAnsIndexArr = [];
-	if (window.localStorage.getItem('unanswered')) {
-		let listOfAnsIndexStr = window.localStorage.getItem('unanswered');
-		listOfAnsIndexArr = listOfAnsIndexStr.split(',');
-	} else {
+	let listOfAnsIndexArr = UnansweredQuestionIndexesStorage.get();
+	if (listOfAnsIndexArr.length === 0) {
+		listOfAnsIndexArr = new Array(numOfQuestions);
 		for (let i = 0; i < numOfQuestions; i += 1) {
-			listOfAnsIndexStr = listOfAnsIndexStr + i.toString() + ',';
 			listOfAnsIndexArr.push(i);
-		};
-		// make sure to get rid of the last ","
-		// store string of indexes to localStorage
-		window.localStorage.setItem('unanswered',listOfAnsIndexStr.slice(0, -1));
-		// console.log(listOfAnsIndexArr)
+		}
+		UnansweredQuestionIndexesStorage.set(listOfAnsIndexArr);
 	}
 	loadNextQestion(listOfAnsIndexArr);
 }
@@ -78,9 +61,7 @@ submit.onclick = function(event) {
 nextQ.onclick = function(event) {
 	showAnswers.innerHTML = '';
 	answerInContainer.innerHTML = '';
-	let listOfAnsIndexStr = window.localStorage.getItem('unanswered');
-	let arr = listOfAnsIndexStr.split(',');
-	let listOfAnsIndexArr = arr.filter(ele => ele !== '');
+	let listOfAnsIndexArr = UnansweredQuestionIndexesStorage.get();
 	loadNextQestion(listOfAnsIndexArr);
 };
 
@@ -91,34 +72,36 @@ giveUp.onclick = function() {
 		);
 	} else {
 		showAnswers(answerArray);
-	};
+	}
 };
 
-function allDone(){
+function allDone() {
 	answerInContainer.innerHTML = '';
 	displayAnswers.innerHTML = '';
 	let reloadButton = document.createElement('button');
-	reloadButton.classList = "pretty-button";
+	reloadButton.classList = 'pretty-button';
 	let closeButton = reloadButton.cloneNode();
-	reloadButton.innerText = "Reset questions";
+	reloadButton.innerText = 'Reset questions';
 	reloadButton.onclick = resetQuestions;
-	closeButton.innerText = "Close";
-	closeButton.onclick = ()=>{window.close()};
+	closeButton.innerText = 'Close';
+	closeButton.onclick = () => {
+		window.close();
+	};
 	let congrats = document.createElement('h3');
-	congrats.innerText = "Congratulations! You're all done!"
+	congrats.innerText = "Congratulations! You're all done!";
 	answerInContainer.appendChild(congrats);
 	answerInContainer.appendChild(reloadButton);
 	answerInContainer.appendChild(closeButton);
 	let buttons = document.getElementById('button-group');
 	buttons.setAttribute('hidden', '');
-};
+}
 
 /**
  * populates answer field
- * @param {Array<string>} answerArray 
+ * @param {Array<string>} answerArray
  */
 function showAnswers(answerArray) {
-  displayAnswers.innerHTML = '';
+	displayAnswers.innerHTML = '';
 	let answerWrapper = document.createElement('ul');
 	answerArray.map(answer => {
 		let newDiv = document.createElement('li');
@@ -126,11 +109,10 @@ function showAnswers(answerArray) {
 		answerWrapper.appendChild(newDiv);
 	});
 	displayAnswers.appendChild(answerWrapper);
-};
+}
 
 /**
  * - check input against answers
- * - call deleteQ function to delete correctly answered queston
  * - show the entire set of correct answers
  * - reset the answer set, answer array, and question index
  */
@@ -142,37 +124,37 @@ function checkAnswer() {
 			console.log('oh no!');
 			notification.innerText = 'try again';
 			return;
-		};
-	};
+		}
+	}
 	notification.innerText = 'Correct!';
 	displayAnswers.innerHTML = '';
-	deleteQ(questionIndex);
+    UnansweredQuestionIndexesStorage.remove(questionIndex);
 	showAnswers(answerArray);
-	let foo = window.localStorage.getItem('unanswered');
-	if(!foo){
+	let foo = UnansweredQuestionIndexesStorage.get();
+	if (foo.length === 0) {
 		allDone();
 	}
 	answerArray = undefined;
 	answerSet = new Set();
 	questionIndex = undefined;
-};
+}
 
 async function loadNextQestion(listOfAnsIndexArr) {
-	// clear answers 
+	// clear answers
 	displayAnswers.innerHTML = '';
 	// change notifcation to questio
 	notification.innerText = '< Question >';
-	// pick a ramdom question 
+	// pick a ramdom question
 	let result = await pickRandomQ(listOfAnsIndexArr);
 	// save which question was asked in index
-  	questionIndex = result.question.index;
+	questionIndex = result.question.index;
 	// update reminder # of questions
 	remaining.innerText = listOfAnsIndexArr.length;
 	// display question
 	let questionDisplay = document.getElementById('queston');
 	questionDisplay.innerText = result.question.question;
-	// save answers 
-	answerArray = result.question.answers; 
+	// save answers
+	answerArray = result.question.answers;
 	// populate input fields
 	let text = document.createElement('p');
 	text.innerText = '< Answer >';
@@ -182,10 +164,10 @@ async function loadNextQestion(listOfAnsIndexArr) {
 		newDiv.type = 'text';
 		newDiv.className = 'answer-input';
 		answerInContainer.appendChild(newDiv);
-	};
+	}
 	// save answer in a set for checking answers
 	answerSet = new Set();
 	for (let i = 0; i < answerArray.length; i += 1) {
 		answerSet.add(answerArray[i].toLowerCase());
-	};
-};
+	}
+}
